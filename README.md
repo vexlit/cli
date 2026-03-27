@@ -1,11 +1,11 @@
 # VEXLIT
 
-**Stop missing real vulnerabilities.**
+Most security scanners miss real vulnerabilities.
 
-Most security scanners use pattern matching.
-VEXLIT tracks how data flows through your code.
+They catch `eval(userInput)`.
+They miss how data flows across functions.
 
-Find issues across functions, not just lines.
+VEXLIT tracks data flow — not just patterns.
 
 ## Try in 10 seconds
 
@@ -16,46 +16,70 @@ vexlit scan .
 
 No config required. Works out of the box.
 
+## What you'll see
+
+```
+🚨 Found 2 potential issues:
+
+[HIGH] Possible injection via user input
+app.js:12
+
+[MEDIUM] Unsafe input usage
+utils.js:45
+```
+
+Tracks how data flows across multiple functions.
+
+## Why this works
+
+Most scanners:
+→ pattern matching
+
+VEXLIT:
+→ tracks how data flows through your code
+
+That's how it catches real-world issues.
+
+## What it does
+
+- Tracks data flow across functions (taint analysis)
+- Finds vulnerabilities most tools miss
+- Works instantly (no setup required)
+
 ## Example
 
 ```js
-// Input
 const userInput = req.query.q;
 const safe = sanitize(userInput);
 eval(transform(safe));
 ```
 
-**Most scanners:** No issues found
+**Most scanners:** No issues
 
-**VEXLIT:** Potential injection detected (sanitization bypass) — tracks data flow across `sanitize()` → `transform()` → `eval()`
+**VEXLIT:** 🚨 Injection detected (sanitization bypass)
 
-## What it does
+## Why I built this
 
-- **Taint Analysis** — Tracks how input moves across functions, not just lines
-- **6,200+ Security Rules** — SQL Injection, XSS, Command Injection, Path Traversal, SSRF, and more
-- **34 Languages** — JavaScript, TypeScript, Python, Java, Go, C#, PHP, Ruby, Rust, Kotlin, Swift, and more
-- **440+ Secret Detection** — API keys, tokens, passwords across all file types
-- **Zero Configuration** — No setup, no config files, just scan
+Most tools I tried either missed real issues
+or were too complex to actually use.
 
-## Usage
+So I built something simple that works.
+
+## Next
+
+Run with more details:
 
 ```bash
-# Scan current directory
-vexlit scan .
-
-# Output as SARIF (GitHub Security tab)
-vexlit scan . --format sarif -o results.sarif
-
-# Scan only changed files (fast CI checks)
-vexlit scan --diff
-
-# Fail on high severity (CI/CD gate)
-vexlit scan . --fail-on high
+vexlit scan . --details
 ```
 
 ## CI/CD
 
-Works with any CI/CD platform. Add one command to your pipeline.
+Works with any CI/CD platform. Add one command:
+
+```bash
+npx @vexlit/cli scan . --fail-on high
+```
 
 ### GitHub Actions
 
@@ -68,34 +92,10 @@ Works with any CI/CD platform. Add one command to your pipeline.
     sarif_file: results.sarif
 ```
 
-### Any other CI
-
-```bash
-npx @vexlit/cli scan . --fail-on high
-```
-
-## Output Formats
-
-| Format | Flag | Use Case |
-|--------|------|----------|
-| Table | `--format table` | Human-readable terminal output |
-| JSON | `--format json` | Programmatic consumption |
-| SARIF | `--format sarif` | GitHub Security tab, CI/CD |
-
-## Why I built this
-
-Most tools I tried either:
-- cost $25K+/year (enterprise only)
-- or missed real-world vulnerabilities (regex-based)
-
-So I built something focused on how data actually flows through code.
-
 ## Links
 
 - Website: [vexlit.ai](https://vexlit.ai)
-- Documentation: [vexlit.ai/docs](https://vexlit.ai/docs)
-- VSCode Extension: [Marketplace](https://marketplace.visualstudio.com/items?itemName=vexlit.vexlit)
-- GitHub Action: [vexlit/action](https://github.com/vexlit/action)
+- Docs: [vexlit.ai/docs](https://vexlit.ai/docs)
 
 ## License
 
